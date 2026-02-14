@@ -1,4 +1,7 @@
 @import "tailwindcss";
+::-webkit-scrollbar {
+  display: none;
+}
 .glow-green {
     box-shadow: 0 0 15px hsl(142 70% 49% / 0.15), 0 0 30px hsl(142 70% 49% / 0.05);
   }
@@ -72,4 +75,25 @@
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border-radius: 0.5rem;
+}
+.grid-bg {
+  background-image:
+    linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.scan-line {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(38, 212, 102, 0.05) 50%,
+    transparent 100%
+  );
+  animation: scanline 5s linear infinite;
+}
+
+@keyframes scanline {
+  0% { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
 }
