@@ -18,7 +18,7 @@ const DEVELOPERS = [
     linkedin: "https://www.linkedin.com/in/amara-vishnu-saran/",
   },
   {
-    name: "Arkala Aditya",
+    name: "Arkala Aditya Raj",
     role: "Full Stack Developer",
     linkedin: "https://www.linkedin.com/in/arkala-aditya-raj-46717b300/",
   }
