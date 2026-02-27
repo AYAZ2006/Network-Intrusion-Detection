@@ -1,6 +1,9 @@
 import { useState } from "react";
 import {Shield,Github,Mail,MessageSquare,MailWarning,X,AlertTriangle,Send,Bug,FileText,Activity,ArrowLeft} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import axios from "axios";
+import { toast } from "react-toastify";
+import HashLoader from 'react-spinners/HashLoader';
 const DEVELOPERS = [
   {
     name: "Mohammed Ayaz Mohiuddin",
@@ -27,8 +30,51 @@ const DEVELOPERS = [
 const Footer = () => {
   const [open, setOpen] = useState(false);
   const [ropen,setROpen] = useState(false);
+  const [contactData, setContactData] = useState({name: "",email: "",message: "",});
+  const [reportData, setReportData] = useState({summary: "",severity: "low",description: "",});
+  const [loading, setLoading] = useState(false);
+  const handleContactChange = (e) => {setContactData({ ...contactData, [e.target.name]: e.target.value });};
+  const handleReportChange = (e) => {setReportData({ ...reportData, [e.target.name]: e.target.value });};
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post("http://127.0.0.1:8000/contact/", contactData);
+      toast.success("Message sent successfully");
+      setOpen(false);
+      setContactData({ name: "", email: "", message: "" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to send message");
+    } finally {
+      setLoading(false);
+    }
+  };
+  const handleReportSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      await axios.post("http://127.0.0.1:8000/report/", reportData);
+      toast.success("Issue reported successfully");
+      setROpen(false);
+      setReportData({ summary: "", severity: "low", description: "" });
+    } catch (error) {
+      console.error(error);
+      toast.error("Failed to submit report");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
+      {loading && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md">
+          <div className="flex flex-col items-center gap-4">
+            <HashLoader color="#26D466" size={80} />
+            <p className="text-white/70 text-sm animate-pulse">Processing request...</p>
+          </div>
+        </div>
+      )}
       <AnimatePresence>
         {open && (
           <>
@@ -42,11 +88,11 @@ const Footer = () => {
               })}
               <button onClick={() => setOpen(false)} className="absolute right-4 top-4 text-white/60 hover:text-white cursor-pointer"><X size={18} /></button>
               <h2 className="text-white text-xl font-semibold mb-6 text-center">Contact Us</h2>
-              <form className="flex flex-col gap-4">
-                <input placeholder="Your Name" className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
-                <input placeholder="Email Address" className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
-                <textarea rows={4} placeholder="Your Message..." className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
-                <button type="button" className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D466] text-black font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer"><Send className="h-5 w-5" />Send Message</button>
+              <form onSubmit={handleContactSubmit} className="flex flex-col gap-4">
+                <input name="name" value={contactData.name} onChange={handleContactChange} placeholder="Your Name" className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
+                <input name="email" value={contactData.email} onChange={handleContactChange} placeholder="Email Address" className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
+                <textarea name="message" value={contactData.message} onChange={handleContactChange} rows={4} placeholder="Your Message..." className="bg-[#060b18] border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#26D466]" required/>
+                <button type="submit" className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D466] text-black font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer"><Send className="h-5 w-5" />Send Message</button>
               </form>
             </motion.div>
           </>
@@ -67,15 +113,15 @@ const Footer = () => {
                   <h2 className="text-3xl font-bold text-white">Report an Issue</h2>
                   <p className="text-gray-400 mt-2 text-sm">Found a bug? Let us know so we can fix it.</p>
               </div>
-              <form className="flex flex-col gap-4">
+              <form onSubmit={handleReportSubmit} className="flex flex-col gap-4">
                 <div className="relative">
                   <AlertTriangle className="absolute left-3 top-3.5 h-5 w-5 text-red-600" />
-                  <input type="text" placeholder="Issue Summary" required className="w-full border bg-[#060b18] border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:border-[#26D466] transition"/>
+                  <input name="summary" value={reportData.summary} onChange={handleReportChange} type="text" placeholder="Issue Summary" required className="w-full border bg-[#060b18] border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:border-[#26D466] transition"/>
                 </div>
                 <div className="space-y-2">
                   <div className="relative">
                       <Activity className="absolute left-3 top-3.5 h-5 w-5 text-[#FFD700]/60" />
-                      <select className="w-full bg-[#060b18] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none transition appearance-none cursor-pointer">
+                      <select name="severity" value={reportData.severity} onChange={handleReportChange} className="w-full bg-[#060b18] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none transition appearance-none cursor-pointer">
                         <option value="low">Severity: Low</option>
                         <option value="medium">Severity: Medium</option>
                         <option value="high">Severity: High</option>
@@ -85,9 +131,9 @@ const Footer = () => {
                 </div>
                 <div className="relative">
                   <FileText className="absolute left-3 top-3.5 h-5 w-5 text-green-500" />
-                  <textarea placeholder="Describe the issue in detail..." required rows="5" className="w-full bg-[#060b18] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:border-[#26D466] transition resize-none"></textarea>
+                  <textarea name="description" value={reportData.description} onChange={handleReportChange} placeholder="Describe the issue in detail..." required rows="5" className="w-full bg-[#060b18] border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 focus:outline-none focus:border-[#26D466] transition resize-none"></textarea>
                 </div>
-                <button type="button" className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D466] text-black font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer"><Send className="h-5 w-5" />Submit Report</button>
+                <button type="submit" className="flex items-center justify-center gap-2 px-4 py-2 bg-[#25D466] text-black font-semibold rounded-lg hover:scale-105 transition-transform cursor-pointer"><Send className="h-5 w-5" />Submit Report</button>
               </form>
             </motion.div>
           </>
