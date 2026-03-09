@@ -1,10 +1,8 @@
-django-allauth==65.4.1
 django-cors-headers==4.7.0
 django-environ==0.12.0
 djangorestframework==3.16.0
 djangorestframework_simplejwt==5.5.0
 python-dotenv==1.0.1
-flowmeter==0.0.3
 gdown==5.2.0
 joblib==1.5.1
 numpy==2.2.5
@@ -12,4 +10,3 @@ pandas==2.2.3
 requests==2.32.3
 scapy==2.7.0
 scikit-learn==1.7.1
-scipy==1.16.1
