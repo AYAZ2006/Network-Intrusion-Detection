@@ -1,6 +1,9 @@
 # traffic_capture_cicids_style.py
 
-from scapy.all import sniff
+try:
+    from scapy.all import sniff
+except ImportError:
+    sniff = None
 import pandas as pd
 import statistics
 import threading
