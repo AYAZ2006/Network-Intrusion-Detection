@@ -7,10 +7,9 @@ class ContactView(APIView):
     def post(self, request):
         serializer = ContactSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            name = serializer.data['name']
-            email = serializer.data['email']
-            message = serializer.data['message']
+            name = serializer.validated_data['name']
+            email = serializer.validated_data['email']
+            message = serializer.validated_data['message']
             admin_message = f"""
             New Contact Enquiry:
             Name: {name}
@@ -36,10 +35,9 @@ class IssueReportView(APIView):
     def post(self, request):
         serializer = IssueReportSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            summary = serializer.data['summary']
-            severity = serializer.data['severity']
-            description = serializer.data['description']
+            summary = serializer.validated_data['summary']
+            severity = serializer.validated_data['severity']
+            description = serializer.validated_data['description']
             admin_message = f"""
             New Issue Report Submitted:
             Summary: {summary}

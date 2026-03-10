@@ -39,7 +39,7 @@ const Footer = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://127.0.0.1:8000/contact/", contactData);
+      await axios.post("https://network-intrusion-backend.vercel.app/contact/", contactData);
       toast.success("Message sent successfully");
       setOpen(false);
       setContactData({ name: "", email: "", message: "" });
@@ -54,7 +54,7 @@ const Footer = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      await axios.post("http://127.0.0.1:8000/report/", reportData);
+      await axios.post("https://network-intrusion-backend.vercel.app/report/", reportData);
       toast.success("Issue reported successfully");
       setROpen(false);
       setReportData({ summary: "", severity: "low", description: "" });
