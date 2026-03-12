@@ -1,21 +1,21 @@
 import { motion } from "framer-motion";
 import {LineChart,Line,PieChart,Pie,Cell,BarChart,Bar,AreaChart,Area,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,Legend,} from "recharts";
 const attackOverTime = [
-  { time: "00:00", attacks: 12, traffic: 450 },
-  { time: "04:00", attacks: 5, traffic: 200 },
-  { time: "08:00", attacks: 28, traffic: 780 },
-  { time: "12:00", attacks: 45, traffic: 1200 },
-  { time: "16:00", attacks: 32, traffic: 980 },
-  { time: "20:00", attacks: 18, traffic: 650 },
-  { time: "23:59", attacks: 22, traffic: 550 },
+  { time: "00:00", attacks: 6, traffic: 220 },
+  { time: "04:00", attacks: 3, traffic: 140 },
+  { time: "08:00", attacks: 18, traffic: 650 },
+  { time: "12:00", attacks: 52, traffic: 1500 },
+  { time: "16:00", attacks: 44, traffic: 1350 },
+  { time: "20:00", attacks: 26, traffic: 820 },
+  { time: "23:59", attacks: 12, traffic: 400 },
 ];
 
 const attackTypes = [
-  { name: "DDoS", value: 35 },
-  { name: "Port Scan", value: 25 },
-  { name: "SQL Injection", value: 18 },
-  { name: "Brute Force", value: 15 },
-  { name: "MITM", value: 7 },
+  { name: "DDoS", value: 48 },
+  { name: "Port Scan", value: 27 },
+  { name: "Brute Force", value: 14 },
+  { name: "SQL Injection", value: 7 },
+  { name: "MITM", value: 4 },
 ];
 
 const PIE_COLORS = [
@@ -27,11 +27,11 @@ const PIE_COLORS = [
 ];
 
 const topIPs = [
-  { ip: "192.168.1.105", count: 142 },
-  { ip: "10.0.0.87", count: 98 },
-  { ip: "172.16.0.34", count: 76 },
-  { ip: "203.45.67.89", count: 54 },
-  { ip: "89.123.45.67", count: 41 },
+  { ip: "185.143.223.45", count: 326 },
+  { ip: "91.134.178.22", count: 274 },
+  { ip: "45.67.229.101", count: 198 },
+  { ip: "103.145.67.89", count: 167 },
+  { ip: "172.16.0.34", count: 121 },
 ];
 
 const CustomTooltip = ({ active, payload, label }) => {
