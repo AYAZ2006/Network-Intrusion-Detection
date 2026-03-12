@@ -169,7 +169,7 @@ const Footer = () => {
             </div>
             <div className="flex items-center gap-6">
               <a href="https://github.com/AYAZ2006/Network-Intrusion-Detection" className="text-[#7B899D] hover:text-[#26D466]"><Github className="h-4 w-4" /></a>
-              <Mail className="h-4 w-4 text-[#7B899D] hover:text-[#26D466]" />
+              <a href="mailto:hajrasultana7075@gmail.com?subject=Intrusion Guard Support&body=Hello Mohammed Ayaz," className="text-[#7B899D] hover:text-[#26D466]"><Mail className="h-4 w-4" /></a>
               <span className="text-xs text-[#7B899D]">Documentation</span>
             </div>
             <p className="text-xs text-[#7B899D] font-mono">© {new Date().getFullYear()} NIDS. All rights reserved.</p>
