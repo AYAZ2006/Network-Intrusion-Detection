@@ -1,5 +1,3 @@
-# traffic_capture_cicids_style.py
-
 try:
     from scapy.all import sniff
 except ImportError:
@@ -7,9 +5,24 @@ except ImportError:
 import pandas as pd
 import statistics
 import threading
-
+monitoring = False
 flows = {}
 
+import requests
+
+def send_log(message, log_type="info"):
+    try:
+        print("Sending:", message)
+        res = requests.post(
+            "http://localhost:8000/api/logs/",
+            json={
+                "message": message,
+                "type": log_type
+            }
+        )
+        print("Status:", res.status_code)
+    except Exception as e:
+        print("ERROR:", e)
 # -------------------------------
 # Flow key (bidirectional)
 # -------------------------------
@@ -17,9 +30,7 @@ def get_flow_key(pkt):
 
     if not pkt.haslayer("IP"):
         return None
-
     proto = pkt["IP"].proto
-
     sport = 0
     dport = 0
 
@@ -55,6 +66,7 @@ def add_packet(pkt):
     flows[key].append(pkt)
 
     print(f"Packet captured: {pkt.summary()}", flush=True)
+    send_log(pkt.summary(), "info") 
 
 
 # -------------------------------

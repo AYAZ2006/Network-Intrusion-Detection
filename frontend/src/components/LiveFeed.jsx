@@ -30,21 +30,41 @@ const LiveFeed = forwardRef((props, ref) => {
   const [logs, setLogs] = useState([]);
   const scrollRef = useRef(null);
   useEffect(() => {
-    const initial = [];
-    for (let i = 0; i < 8; i++) {
-      const type = Math.random() > 0.6 ? "attack" : Math.random() > 0.3 ? "benign": "info";
-      const messages = type === "attack" ? attackMessages : type === "benign" ? benignMessages : infoMessages;
-      const d = new Date(Date.now() - (8 - i) * 5000);
-      initial.push({id: i,time: d.toLocaleTimeString("en-US", { hour12: false }),message: messages[Math.floor(Math.random() * messages.length)],type,});}
-    setLogs(initial);
-    const interval = setInterval(() => {
-      const type = Math.random() > 0.6 ? "attack" : Math.random() > 0.3 ? "benign" : "info";
-      const messages = type === "attack" ? attackMessages : type === "benign" ? benignMessages : infoMessages;
-      const entry = {id: Date.now(),time: new Date().toLocaleTimeString("en-US", { hour12: false }),message: messages[Math.floor(Math.random() * messages.length)],type,};
-      setLogs((prev) => [...prev.slice(-50), entry]);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
+  const fetchLogs = async () => {
+    try {
+      const res = await fetch("http://localhost:8000/api/logs/get/");
+      const data = await res.json();
+      if (data.length === 0) {
+        setLogs([
+          {
+            id: "standby",
+            time: new Date().toLocaleTimeString("en-US", { hour12: false }),
+            message: "System is on standby... waiting for monitoring to start",
+            type: "info",
+          },
+        ]);
+        return;
+      }
+
+      const formatted = data.map((log, index) => ({
+        id: index,
+        time: log.time,
+        message: log.message,
+        type: log.type || "info",
+      }));
+
+      setLogs(formatted);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  fetchLogs();
+
+  const interval = setInterval(fetchLogs, 2000);
+
+  return () => clearInterval(interval);
+}, []);
 
   useEffect(() => {
     if (scrollRef.current) {

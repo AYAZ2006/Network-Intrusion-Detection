@@ -7,7 +7,7 @@ export default function SplashAnimation() {
   const [show, setShow] = useState(true);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShow(false), 6000); // duration animation stays
+    const timer = setTimeout(() => setShow(false), 6000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -17,8 +17,8 @@ export default function SplashAnimation() {
         <motion.div
           initial={{ opacity: 1 }}
           animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}   // 👈 smooth fade out
-          transition={{ duration: 1 }} // fade time
+          exit={{ opacity: 0 }}   
+          transition={{ duration: 1 }} 
           style={{
             position: "fixed",
             inset: 0,

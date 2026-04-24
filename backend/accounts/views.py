@@ -73,15 +73,27 @@ from .predictor import predict_csv
 
 
 def test_model(request):
-
     csv_path = os.path.join(settings.BASE_DIR, "traffic.csv")
-
     df = predict_csv(csv_path)
-
-    # count results
     result_counts = df["prediction"].value_counts().to_dict()
+    return JsonResponse({"total_flows": len(df),"results": result_counts})
 
-    return JsonResponse({
-        "total_flows": len(df),
-        "results": result_counts
-    })
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from datetime import datetime
+LOGS = []
+
+@api_view(["POST"])
+def receive_log(request):
+    log = {
+        "message": request.data.get("message"),
+        "type": request.data.get("type", "info"),
+        "time": datetime.now().strftime("%H:%M:%S")
+    }
+    print("DATA RECEIVED:", log)
+    LOGS.append(log)
+    return Response({"status": "ok"})
+
+@api_view(["GET"])
+def get_logs(request):
+    return Response(LOGS[-50:])

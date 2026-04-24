@@ -1,35 +1,106 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Play, Square, Radio, AlertTriangle, CheckCircle } from "lucide-react";
-const attackTypes = [
-  "DDoS Attack",
-  "Port Scan",
-  "SQL Injection",
-  "Brute Force",
-  "Man-in-the-Middle",
-];
-
-const severities = ["Low", "Medium", "High", "Critical"];
-const randomIP = () =>
-  `${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}.${Math.floor(Math.random() * 255)}`;
+import axios from "axios";
+import {toast} from "react-toastify";
 const MonitoringPanel = () => {
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [detection, setDetection] = useState(null);
 
   useEffect(() => {
-    if (!isMonitoring) return;
-    const interval = setInterval(() => {
-      const isAttack = Math.random() > 0.6;
-      const now = new Date();
-      const ts = now.toLocaleTimeString("en-US", { hour12: false });
-      if (isAttack) {
-        setDetection({id: Date.now(),type: "attack",attackType: attackTypes[Math.floor(Math.random() * attackTypes.length)],severity: severities[Math.floor(Math.random() * severities.length)],sourceIP: randomIP(),timestamp: ts,});
-      } else {
-        setDetection({id: Date.now(),type: "benign",timestamp: ts,});
+  if (!isMonitoring) return;
+
+  const fetchResults = async () => {
+    try {
+      const res = await axios.get("http://127.0.0.1:8000/test-model/");
+      const data = res.data;
+
+      const now = new Date().toLocaleTimeString("en-US", { hour12: false });
+
+      const results = data.results;
+      const total = data.total_flows;
+
+      // 👉 Remove benign from attack calculation
+      const attackEntries = Object.entries(results).filter(
+        ([key]) => key !== "Benign"
+      );
+
+      // ✅ CASE 1: No attack
+      if (attackEntries.length === 0) {
+        setDetection({
+          id: Date.now(),
+          type: "benign",
+          timestamp: now,
+        });
+        return;
       }
-    }, 3000);
-    return () => clearInterval(interval);
-  }, [isMonitoring]);
+
+      // ✅ CASE 2: Attack exists
+      // pick highest attack
+      let topAttack = attackEntries[0];
+      attackEntries.forEach((entry) => {
+        if (entry[1] > topAttack[1]) {
+          topAttack = entry;
+        }
+      });
+
+      const [attackType, count] = topAttack;
+
+      const percentage = ((count / total) * 100).toFixed(2);
+
+      setDetection({
+        id: Date.now(),
+        type: "attack",
+        attackType: attackType,
+        severity: `${percentage}%`,
+        sourceIP: "192.168.x.x", // optional (you can improve later)
+        timestamp: now,
+      });
+
+    } catch (err) {
+  console.error("Error fetching model:", err);
+
+  const now = new Date().toLocaleTimeString("en-US", { hour12: false });
+
+  // 👉 If CSV not found OR backend error → treat as no threat
+  if (
+    err.response &&
+    err.response.data &&
+    typeof err.response.data === "string" &&
+    err.response.data.includes("No such file or directory")
+  ) {
+    setDetection({
+      id: Date.now(),
+      type: "benign",
+      timestamp: now,
+    });
+    return;
+  }
+
+  // 👉 fallback (any error → still show safe state)
+  setDetection({
+    id: Date.now(),
+    type: "benign",
+    timestamp: now,
+  });
+}
+  };
+
+  fetchResults(); // initial call
+
+  const interval = setInterval(fetchResults, 10000); // every 10 sec
+
+  return () => clearInterval(interval);
+}, [isMonitoring]);
+
+  const startMonitoringAPI = async () => {
+    try {
+      const response = await axios.post("http://127.0.0.1:8000/capture/",{action: "start_monitoring",});
+      toast.success("Capture started:", response.data);
+    } catch (error) {
+      toast.error("Error starting monitoring:");
+    }
+  };
 
   return (
     <section className="py-16 px-4">
@@ -46,7 +117,16 @@ const MonitoringPanel = () => {
             </div>
           )}
           <div className="relative z-10">
-          <button onClick={() => {const next = !isMonitoring;setIsMonitoring(next);if (!next) setDetection(null); }} className={`inline-flex items-center gap-3 px-8 py-4 rounded-lg font-semibold text-sm tracking-wide transition-all duration-300 ${isMonitoring ? "bg-red-900 text-red-300 border border-[#801E1F] hover:bg-[#3B1618] glow-red" : "bg-[#1f6b3d] text-white border border-[#19753C] hover:bg-[#144B2B] glow-green"}`}>              {isMonitoring ? (
+          <button onClick={() => {
+  const next = !isMonitoring;
+  setIsMonitoring(next);
+
+  if (next) {
+    startMonitoringAPI();
+  } else {
+    setDetection(null);
+  }
+}} className={`inline-flex items-center gap-3 px-8 py-4 rounded-lg font-semibold text-sm tracking-wide transition-all duration-300 ${isMonitoring ? "bg-red-900 text-red-300 border border-[#801E1F] hover:bg-[#3B1618] glow-red" : "bg-[#1f6b3d] text-white border border-[#19753C] hover:bg-[#144B2B] glow-green"}`}>              {isMonitoring ? (
                 <>
                   <Square className="h-5 w-5 text-[#EE2B2B]" /><span className="text-white"> Stop Monitoring</span>
                 </>

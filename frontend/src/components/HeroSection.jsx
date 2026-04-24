@@ -36,7 +36,7 @@ const HeroSection = () => {
         </motion.div>
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }} className="grid grid-cols-1 sm:grid-cols-3 gap-8 mt-8 mb-16">
           <div>
-            <p className="text-3xl font-bold text-[#25D466]">99.98%</p>
+            <p className="text-3xl font-bold text-[#25D466]">95.98%</p>
             <p className="text-sm text-[#7B899D]">Detection Accuracy</p>
           </div>
           <div>
